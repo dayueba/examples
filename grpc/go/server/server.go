@@ -1,11 +1,13 @@
 package main
 
 import (
-	"net"
 	"context"
 	"log"
+	"net"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+
 	pb "grpcexample/pb"
 )
 
@@ -17,11 +19,14 @@ type server struct {
 	pb.UnimplementedHelloServiceServer
 }
 
-func (s *server) Hello(ctx context.Context, req *pb.String) (*pb.String, error) {
-	log.Printf("recv: %v", req)
-	return &pb.String{
-		Value: req.Value,
-	}, nil
+func (s *server) Hello(ctx context.Context, req *pb.Request) (*pb.Response, error) {
+	log.Printf("recv: %v", req.FieldMask.Paths)
+	res := pb.Response{
+		FieldMask: &fieldmaskpb.FieldMask{
+			Paths: []string{"hello", "world"},
+		}}
+
+	return &res, nil
 }
 
 func main() {

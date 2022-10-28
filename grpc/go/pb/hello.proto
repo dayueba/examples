@@ -1,14 +1,19 @@
 syntax = "proto3";
 
+import "google/protobuf/field_mask.proto";
 
 package hello;
 
 option go_package="app/services;services";
 
-message String {
-    string value = 1;
+message Request {
+    google.protobuf.FieldMask field_mask = 1;
+}
+
+message Response {
+    google.protobuf.FieldMask field_mask = 1;
 }
 
 service HelloService {
-    rpc Hello (String) returns (String);
+    rpc Hello (Request) returns (Response);
 }
