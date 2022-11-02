@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	"time"
+	// "time"
 
 	pb "grpcexample/pb"
 
@@ -24,8 +24,9 @@ func main() {
 	defer conn.Close()
 	c := pb.NewHelloServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
+	ctx := context.Background()
+	// ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	// defer cancel()
 	r, err := c.Hello(ctx, &pb.Request{FieldMask: &fieldmaskpb.FieldMask{
 		Paths: []string{"hello", "world"},
 	}})
@@ -33,4 +34,10 @@ func main() {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Greeting: %v", r.GetFieldMask())
+
+
+	_, err = c.Foo(ctx, &pb.FooRequest{})
+	if err != nil {
+		log.Printf("could not greet: %v", err)
+	}
 }

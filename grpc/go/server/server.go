@@ -6,7 +6,11 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
+
 
 	pb "grpcexample/pb"
 )
@@ -15,6 +19,7 @@ const (
 	addr = ":50051"
 )
 
+var _ pb.HelloServiceServer = (*server)(nil)
 type server struct {
 	pb.UnimplementedHelloServiceServer
 }
@@ -27,6 +32,11 @@ func (s *server) Hello(ctx context.Context, req *pb.Request) (*pb.Response, erro
 		}}
 
 	return &res, nil
+}
+
+func (s *server) Foo(ctx context.Context, req *pb.FooRequest) (*pb.FooResponse, error) {
+	// return nil, errors.New("oops")
+	return nil, status.Error(codes.NotFound, "some description")
 }
 
 func main() {
