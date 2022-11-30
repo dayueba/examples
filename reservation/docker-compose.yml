@@ -5,7 +5,7 @@ services:
   db:
     image: postgres
     restart: always
-    networks: 
+    networks:
       - pg
     ports:
       - 5432:5432
