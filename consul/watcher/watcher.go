@@ -30,7 +30,6 @@ func (w *Watcher) registerServiceWatcher(serviceName string) error {
 
 	// 定义service变化后所执行的程序(函数)handler
 	wp.Handler = func(idx uint64, data interface{}) {
-		fmt.Printf("have event: %T\n", data)
 		switch d := data.(type) {
 		case []*consulapi.ServiceEntry:
 			for _, i := range d {
@@ -39,9 +38,8 @@ func (w *Watcher) registerServiceWatcher(serviceName string) error {
 				// 打印service的状态
 				fmt.Println("service status: ", i.Checks.AggregatedStatus())
 			}
-}
+	}
 
-		
 	}
 	// 启动监控
 	go wp.Run(w.Address)
