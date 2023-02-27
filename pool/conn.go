@@ -9,11 +9,13 @@ import (
 type Conn interface {
 	Value() net.Conn
 	Close() error
-	Reset() error
+	net.Conn
 }
 
+var _ Conn = (*conn)(nil)
+
 type conn struct {
-	cc       net.Conn
+	net.Conn
 	pool     *pool
 	inflight int32
 	lastPick int64
@@ -22,28 +24,34 @@ type conn struct {
 func (c *conn) Value() net.Conn {
 	atomic.AddInt32(&c.inflight, 1)
 	atomic.StoreInt64(&c.lastPick, time.Now().UnixNano())
-	return c.cc
+	return c.Conn
 }
 
 func (c *conn) Close() error {
 	atomic.AddInt32(&c.inflight, -1)
+	go func() {
+		if err := connCheck(c); err != nil {
+			c.reset()
+			c.pool.refresh()
+		}
+	}()
 	return nil
 }
 
-func (c *conn) Reset() error {
-	cc := c.cc
-	c.cc = nil
+func (c *conn) reset() error {
+	cc := c.Conn
+	c.Conn = nil
 	atomic.StoreInt32(&c.inflight, 0)
 	atomic.StoreInt64(&c.lastPick, 0)
 	if cc != nil {
 		return cc.Close()
 	}
-	return c.pool.refresh()
+	return nil
 }
 
 func (p *pool) wrapConn(cc net.Conn) *conn {
 	return &conn{
-		cc:   cc,
+		Conn: cc,
 		pool: p,
 	}
 }
