@@ -5,7 +5,7 @@
 2. FieldMask 的使用。作用：达到实现 graphql 的作用
     - https://mp.weixin.qq.com/s/L7He7M4JWi84z1emuokjbQ
     - https://mp.weixin.qq.com/s/uRuejsJN37hdnCN4LLeBKQ
-3. grpc 错误处理
+3. grpc 错误处理： [错误处理扩展](https://xjip3se76o.feishu.cn/wiki/UkWsw5ngCi4FjCkNrsDcaFBan0d)
 ```go
 // google.golang.org/grpc/stream.go: client toRPCErr
 err = recv(a.p, cs.codec, a.s, a.dc, m, *cs.callInfo.maxReceiveMessageSize, nil, a.decomp)
@@ -16,5 +16,4 @@ if err == nil {
 // use
 return nil, status.Error(codes.NotFound, "some description")
 ```
-
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"log"
 	"net"
 
@@ -11,7 +12,6 @@ import (
 
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-
 	pb "grpcexample/pb"
 )
 
@@ -20,6 +20,7 @@ const (
 )
 
 var _ pb.HelloServiceServer = (*server)(nil)
+
 type server struct {
 	pb.UnimplementedHelloServiceServer
 }
@@ -36,7 +37,13 @@ func (s *server) Hello(ctx context.Context, req *pb.Request) (*pb.Response, erro
 
 func (s *server) Foo(ctx context.Context, req *pb.FooRequest) (*pb.FooResponse, error) {
 	// return nil, errors.New("oops")
-	return nil, status.Error(codes.NotFound, "some description")
+	//return nil, status.Error(codes.NotFound, "some description")
+	st := status.New(codes.NotFound, "")
+	details, _ := st.WithDetails(&errdetails.ErrorInfo{
+		Reason:   "id",
+		Metadata: map[string]string{},
+	})
+	return nil, details.Err()
 }
 
 func main() {
